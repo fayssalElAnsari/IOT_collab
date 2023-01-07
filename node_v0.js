@@ -134,44 +134,44 @@ async function main_v0(){
 			var key = path.parse(topic.toString()).base;
 			// Stocker le dictionnaire qui vient d'etre créé dans la BD
 			// en utilisant le nom du topic comme key de collection
-			dbo.collection(key).insertOne(message, function(err, res) {
+			dbo.collection(key).updateOne({ _id: message.info.loc}, {$set : message }, {upsert: true}  , function(err, res) {
 			if (err) throw err;
 			console.log("\nMONGO : \t Item : ", message, 
 			"\nhas been inserted in db in collection :", key);
 	    });
 
 		} else {
-			// wh = message.who
-			// val = message.value
+			wh = message.who
+			val = message.value
 
-			// // Debug : Gerer une liste de who pour savoir qui utilise le node server	
-			// let wholist = []
-			// var index = wholist.findIndex(x => x.who==wh)
-			// if (index === -1){
-			// wholist.push({who:wh});	    
-			// }
-			// console.log("NODE JS : who is using the node server ? =>", wholist);
+			// Debug : Gerer une liste de who pour savoir qui utilise le node server	
+			let wholist = []
+			var index = wholist.findIndex(x => x.who==wh)
+			if (index === -1){
+			wholist.push({who:wh});	    
+			}
+			console.log("NODE JS : who is using the node server ? =>", wholist);
 
-			// // Mise en forme de la donnee à stocker => dictionnaire
-			// // Le format de la date est important => doit etre compatible avec le
-			// // parsing qui sera realise par highcharts dans l'UI
-			// // cf https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_tolocalestring_date_all
-			// // vs https://jsfiddle.net/BlackLabel/tgahn7yv
-			// // var frTime = new Date().toLocaleString("fr-FR", {timeZone: "Europe/Paris"});
-			// var new_entry = { date: frTime, // timestamp the value 
-			// 		who: wh,      // identify ESP who provide 
-			// 		value: val    // this value
-			// 		};
+			// Mise en forme de la donnee à stocker => dictionnaire
+			// Le format de la date est important => doit etre compatible avec le
+			// parsing qui sera realise par highcharts dans l'UI
+			// cf https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_tolocalestring_date_all
+			// vs https://jsfiddle.net/BlackLabel/tgahn7yv
+			// var frTime = new Date().toLocaleString("fr-FR", {timeZone: "Europe/Paris"});
+			var new_entry = { date: frTime, // timestamp the value 
+					who: wh,      // identify ESP who provide 
+					value: val    // this value
+					};
 		
-			// // On recupere le nom basique du topic du message pour s'en servir de key
-			// var key = path.parse(topic.toString()).base;
-			// // Stocker le dictionnaire qui vient d'etre créé dans la BD
-			// // en utilisant le nom du topic comme key de collection
-			// dbo.collection(key).insertOne(new_entry, function(err, res) {
-			// if (err) throw err;
-			// console.log("\nMONGO : \t Item : ", new_entry, 
-			// "\nhas been inserted in db in collection :", key);
-	    // });
+			// On recupere le nom basique du topic du message pour s'en servir de key
+			var key = path.parse(topic.toString()).base;
+			// Stocker le dictionnaire qui vient d'etre créé dans la BD
+			// en utilisant le nom du topic comme key de collection
+			dbo.collection(key).insertOne(new_entry, function(err, res) {
+			if (err) throw err;
+			console.log("\nMONGO : \t Item : ", new_entry, 
+			"\nhas been inserted in db in collection :", key);
+	    });
 
 		}
 	    

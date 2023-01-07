@@ -33,11 +33,6 @@ app.use(function(request, response, next) { //Pour eviter les problemes de CORS/
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname + '/ui_lucioles.html'));
 });
-// add route for leaflet
-app.get('/map', function (req, res) {
-    res.sendFile(path.join(__dirname + '/map_page.html'));
-});
-
 
 // The request contains the name of the targeted ESP !
 //     /esp/temp?who=80%3A7D%3A3A%3AFD%3AC9%3A44
@@ -68,6 +63,34 @@ app.get('/esp/:what', function (req, res) {
 	console.log(result);
 	res.json(result.reverse()); // This is the response.
 	console.log('end find');
+    });
+    console.log('end app.get');
+});
+
+
+// The request contains the name of the targeted ESP !
+//     /esp/temp?who=80%3A7D%3A3A%3AFD%3AC9%3A44
+// Exemple d'utilisation de routes dynamiques
+//    => meme fonction pour /esp/temp et /esp/light
+app.get('/esps/', function (req, res) {
+    // cf https://stackabuse.com/get-query-strings-and-parameters-in-express-js/
+    console.log(req.originalUrl);
+    
+    console.log("\n--------------------------------");
+    console.log("A client/navigator ", req.ip);
+    console.log("sending URL ",  req.originalUrl);
+    console.log("wants to GET ", wa);
+    console.log("values from object ", wh);
+    
+    // Récupération des nb derniers samples stockés dans
+    // la collection associée a ce topic (wa) et a cet ESP (wh)
+    const nb = 20;
+    //dbo.collection(key).find({who:wh}).toArray(function(err,result) {
+    dbo.collection("iot").find({}).sort({date:1}).limit(nb).toArray(function(err, result) {
+        if (err) throw err;
+        console.log(result);
+        res.json(result.reverse()); // This is the response.
+        console.log('end find');
     });
     console.log('end app.get');
 });

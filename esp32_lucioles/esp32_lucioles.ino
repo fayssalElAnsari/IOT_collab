@@ -16,6 +16,8 @@
 // MQTT https://pubsubclient.knolleary.net/
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
+#include "uptime_formatter.h"
+#include "uptime.h"
 
 #define USE_SERIAL Serial
 
@@ -53,11 +55,11 @@ int MQTT_PORT = 1883;
 //==== MQTT Credentials =========
 /*#define MQTT_CRED*/
 #ifdef MQTT_CRED
-char *mqtt_id     = "Fayssal_MQTT";
+char *mqtt_id     = "RANDOM_CITIZEN_MQTT";
 char *mqtt_login  = "darkvador";
 char *mqtt_passwd = "6poD2R2";
 #else
-char *mqtt_id     = "vador";
+char *mqtt_id     = "RANDOM_CITIZEN_MQTT";
 char *mqtt_login  = NULL;
 char *mqtt_passwd = NULL;
 #endif
@@ -165,13 +167,18 @@ int get_pin(int pin){
 }
 
 /** define constants **/
-const int led01 = 1;
-const int led02 = 0;
+const char* led01 = "ON";
+const char* led02 = "OFF";
 
 const float LAT = 43.616; 
 const float LGN = 7.0646;
 
 const char* IDENTIFIER = "RandomCitizens";
+
+String getUptime() {
+  uptime::calculateUptime();
+  return String(uptime::getMinutes()) +"m :  " + String(uptime::getSeconds()) + "s ";
+}
 
 String getJSONString_fromstatus(float temp, int light){
   /*
@@ -187,9 +194,9 @@ String getJSONString_fromstatus(float temp, int light){
   jsondoc["info"]["loc"]["lgn"] = LGN;  // constante
     
   jsondoc["info"]["user"] = IDENTIFIER;
-//  jsondoc["info"]["uptime"] = getUptime();
-//  jsondoc["info"]["ident"] = getMAC();
-//  jsondoc["info"]["ip"] = getIP();
+  jsondoc["info"]["uptime"] = getUptime();
+  jsondoc["info"]["ident"] = WiFi.macAddress().c_str();
+  jsondoc["info"]["ip"] = WiFi.localIP().toString().c_str();
 
   
   String data = "";
@@ -231,7 +238,7 @@ void setup () {
 
 void loop () {
   static uint32_t lasttick = 0;
-  char data[200];
+  char data[250];
   String payload; // Payload : "JSON ready" 
   String payload2;
   int32_t period = 6 * 1000l; // Publication period

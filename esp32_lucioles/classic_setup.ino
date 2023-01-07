@@ -46,6 +46,7 @@ void connect_wifi(){
 
  Serial.println(String("\nAttempting to connect to SSIDs : "));
  wifiMulti.addAP("_FAYSSAL", "qwertyui");
+ wifiMulti.addAP("iPhone", "44444444");
  wifiMulti.addAP("Livebox-B870", "MYCNcZqnvsWsiy7s52");
  //wifiMulti.addAP("HUAWEI-6EC2", "FGY9MLBL");
  //wifiMulti.addAP("HUAWEI-553A", "QTM06RTT");

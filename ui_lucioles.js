@@ -71,6 +71,7 @@ function init() {
 //=== Installation de la periodicite des requetes GET============
 function process_esp(which_esps,i){
     const refreshT = 10000 // Refresh period for chart
+    const refreshTMarkers = 20000; // Refresh period for markers
     esp = which_esps[i];    // L'ESP "a dessiner"
     //console.log(esp) // cf console du navigateur
     
@@ -92,6 +93,10 @@ function process_esp(which_esps,i){
 		       '/esp/light',     // URL to GET
 		       chart2.series[i], // Serie to fill
 		       esp);             // ESP targeted
+
+    // Gestion des markers
+    populateMap()
+    window.setInterval(populateMap, refreshTMarkers);
 }
 
 
@@ -127,9 +132,28 @@ function get_samples(path_on_node, serie, wh){
     });
 }
 
+function populateMap () {
+    node_url = 'http://127.0.0.1:3000';
+    $.ajax({
+        url: node_url.concat("/esps/"), // URL to "GET" : /esp/temp ou /esp/light
+        type: 'GET',
+        headers: { Accept: "application/json", },
+	data: {}, // parameter of the GET request
+        success: function (resultat, statut) { // Anonymous function on success
+            resultat.forEach(function (element) {
+                parseAndShowIotObject(element);
+                buildPoiMarkers(Number(element.info.loc.lat), Number(element.info.loc.lgn), addMarkers);
+            });
+        },
+        error: function (resultat, statut, erreur) {
+            console.log(erreur);
+        },
+        complete: function (resultat, statut) {
+        }
+    });
+}
+
 
 //assigns the onload event to the function init.
 //=> When the onload event fires, the init function will be run. 
 window.onload = init;
-
-
