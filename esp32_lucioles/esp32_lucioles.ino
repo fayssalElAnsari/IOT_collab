@@ -180,6 +180,14 @@ String getUptime() {
   return String(uptime::getMinutes()) +"m :  " + String(uptime::getSeconds()) + "s ";
 }
 
+String getMac() {
+  return WiFi.macAddress().c_str();
+}
+
+String getIp() {
+  return WiFi.localIP().toString().c_str();
+}
+
 String getJSONString_fromstatus(float temp, int light){
   /*
    * put all relevant data from esp in a "json formatted" String
@@ -195,8 +203,8 @@ String getJSONString_fromstatus(float temp, int light){
     
   jsondoc["info"]["user"] = IDENTIFIER;
   jsondoc["info"]["uptime"] = getUptime();
-  jsondoc["info"]["ident"] = WiFi.macAddress().c_str();
-  jsondoc["info"]["ip"] = WiFi.localIP().toString().c_str();
+  jsondoc["info"]["ident"] = getMac();
+  jsondoc["info"]["ip"] = getIp();
 
   
   String data = "";

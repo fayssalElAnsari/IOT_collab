@@ -2,11 +2,11 @@ var openWeatherMapApiKey = "22eebd6f7916b6f7dcb4f72cbc9aa8b9";
 
 var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>\n© RandomCitizenS dev project ©'
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a></br>© RandomCitizenS dev project ©'
 })
 
 var map = L.map('map', {
-    center: [39.73, -104.99],
+    center: [43.616, 7.0646],
     zoom: 10,
     layers: [osm]
 });
@@ -32,45 +32,45 @@ var greenIcon = new L.Icon({
 createMarkerMsg = function (iotObject) {
     let msg = "";
 
-    msg += "INFO: \n";
+    msg += "<b>INFO: </b></br>";
     if (iotObject.info.ident != null){
-        msg += "    id: ";
+        msg += "&nbsp;&nbsp;<b>id:</b> ";
         msg += iotObject.info.ident;
-        msg += "\n";
+        msg += "</br>";
     }
     if (iotObject.info.user != null) {
-        msg += "    user: ";
+        msg += "&nbsp;&nbsp;<b>user:</b> ";
         msg += iotObject.info.user;
-        msg += "\n";
+        msg += "</br>";
     }
     if (iotObject.info.ip != null){
-        msg += "    IP: ";
+        msg += "&nbsp;&nbsp;<b>IP:</b> ";
         msg += iotObject.info.ip;
-        msg += "\n";
+        msg += "</br>";
     }
 
-    msg += "\n";
+    msg += "</br>";
 
-    msg += "STATUS:\n";
+    msg += "<b>STATUS:</b></br>";
     if (iotObject.status.temperature != null) {
-        msg += "    temperature:";
-        msg += iotObject.status.temperature;
-        msg += "\n";
+        msg += "&nbsp;&nbsp;<b>temperature:</b>";
+        msg += iotObject.status.temperature + " °C";
+        msg += "</br>";
     }   
     if (iotObject.status.light != null) {
-        msg += "    light:";
+        msg += "&nbsp;&nbsp;<b>light:</b>";
         msg += iotObject.status.light;
-        msg += "\n";
+        msg += "</br>";
     }
     if (iotObject.status.led1 != null ) {
-        msg += "    led1:";
+        msg += "&nbsp;&nbsp;<b>led1:</b>";
         msg += iotObject.status.led1;
-        msg += "\n";
+        msg += "</br>";
     }
     if (iotObject.status.led2 != null) {
-        msg += "    led2:";
+        msg += "&nbsp;&nbsp;<b>led2:</b>";
         msg += iotObject.status.led2;
-        msg += "\n";
+        msg += "</br>";
     } 
 
     return msg;
@@ -91,7 +91,7 @@ buildPoiMarkers = function (lat, lon, addMarkersFnc) {
         var marker = L.marker([lat+0.001, lon+0.001], {icon: greenIcon});
         let URL = "https://api.openweathermap.org/data/2.5/weather?lat="+lat+"&lon="+lon+"&units=metric&appid="+openWeatherMapApiKey
         $.get(URL,function(data, status){
-            marker.bindPopup(String(data.main.temp) + " °C").openPopup();
+            marker.bindPopup("<b>OWM temp: </b>"+ String(data.main.temp) + " °C").openPopup();
             poiMarkers.push(marker);
             if (addMarkers){
                 addMarkers();
@@ -105,12 +105,15 @@ buildPoiMarkers = function (lat, lon, addMarkersFnc) {
 // this function will clear the old markers layer 
 // and add a new one
 addMarkers = function () {
-    layerControl.remove(layerControl);
+    layerControl.remove();
 
     markersLayerGroup = L.layerGroup(markers);
     poiMarkersLayerGroupe = L.layerGroup(poiMarkers);
     layerControl = L.control.layers(null, null).addTo(map);
     layerControl.addOverlay(markersLayerGroup, "ESP_Markers");
     layerControl.addOverlay(poiMarkersLayerGroupe, "POI_Markers");
+
+    var group = new L.featureGroup(markers);
+    map.fitBounds(group.getBounds());
 }
 
